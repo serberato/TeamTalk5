@@ -74,7 +74,7 @@ jobs:
 
     - name: Copy test binary to install directory
       run: |
-        cp ${{github.workspace}}/Build/build-release-ubuntu${{ matrix.version }}/Library/TeamTalkLib/test/catchtt ${{runner.workspace}}/install/
+        find ${{github.workspace}}/Build/build-release-ubuntu${{ matrix.version }} -name "catchtt" -exec cp {} ${{runner.workspace}}/install/ \;
 
     - name: Build debug TeamTalk using prebuilt toolchain
       working-directory: ${{github.workspace}}
