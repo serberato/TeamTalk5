@@ -54,7 +54,9 @@ jobs:
 
     - name: Install dependencies
       working-directory: ${{github.workspace}}/Build
-      run: sudo make depend-ubuntu${{ matrix.version }}
+      run: |
+        sudo make depend-ubuntu${{ matrix.version }}
+        sudo apt-get install -y catch2
 
     - name: Build TeamTalk toolchain, libraries and apps
       working-directory: ${{github.workspace}}
@@ -75,13 +77,6 @@ jobs:
     - name: Copy test binary to install directory
       run: |
         find ${{github.workspace}}/Build/build-release-ubuntu${{ matrix.version }} -name "catchtt" -exec cp {} ${{runner.workspace}}/install/ \;
-
-    - name: Build debug TeamTalk using prebuilt toolchain
-      working-directory: ${{github.workspace}}
-      run: |
-        source env.sh
-        make CONFIGTYPE=debug CMAKE_EXTRA="-DTOOLCHAIN_INSTALL_PREFIX=${{runner.workspace}}/toolchain-install -DTOOLCHAIN_BUILD_EXTERNALPROJECTS=OFF -DFEATURE_WEBRTC=OFF -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2=ON -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2_PERF=OFF -DCMAKE_INSTALL_PREFIX=${{runner.workspace}}/install" -C Build ubuntu${{ matrix.version }}
-        echo TEAMTALK_INSTALLDIR=${{runner.workspace}}/install>> $GITHUB_ENV
 
     - name: Upload TeamTalk SDK artifact
       uses: actions/upload-artifact@v7
