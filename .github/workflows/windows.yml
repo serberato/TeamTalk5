@@ -51,6 +51,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         submodules: true
+        path: TeamTalk5
 
     - name: Set up Java
       uses: actions/setup-java@v5
@@ -124,7 +125,7 @@ jobs:
     - name: Configure CMake for toolchain build
       working-directory: ${{runner.workspace}}
       run: >-
-        cmake -S TeamTalk5 -B output -A ${{ matrix.cmakeplatform }}
+        cmake -S ${{github.workspace}} -B output -A ${{ matrix.cmakeplatform }}
         -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2=ON
         -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2_PERF=OFF
         -DFEATURE_WEBRTC=OFF
@@ -306,7 +307,7 @@ jobs:
     - name: Configure CMake for prebuilt toolchain
       working-directory: ${{runner.workspace}}
       run: >-
-        cmake -S TeamTalk5 -B output-developer -A ${{ matrix.cmakeplatform }}
+        cmake -S ${{github.workspace}} -B output-developer -A ${{ matrix.cmakeplatform }}
         -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2=ON
         -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2_PERF=OFF
         -DFEATURE_WEBRTC=OFF
