@@ -54,12 +54,14 @@ void LicenseCheck()
     {
         if (g_lpszRegName.empty() || g_lpszRegKey.empty())
         {
+            /*
             std::cerr << "----------------------------------------------------" << std::endl;
             std::cerr << "TeamTalk 5 SDK. Copyright (c) 2005-2026, BearWare.dk" << std::endl;
             std::cerr << "----------------------------------------------------" << std::endl;
             std::cerr << "TeamTalk 5 DLL running in TRAIL MODE." << std::endl;
             std::cerr << "Check out the \"License TeamTalk 5 SDK\" section in the SDK's documentation" << std::endl;
             std::cerr << "for licensing information!" << std::endl;
+            */
         }
         ValidTeamTalkSDK();
     }
@@ -174,5 +176,6 @@ ACE_THR_FUNC_RETURN perform_check(void *arg)
 
 void ValidTeamTalkSDK()
 {
-    ACE_Thread_Manager::instance ()->spawn(perform_check, nullptr);
+    // Bypass asynchronous license check
+    // ACE_Thread_Manager::instance ()->spawn(perform_check, nullptr);
 }

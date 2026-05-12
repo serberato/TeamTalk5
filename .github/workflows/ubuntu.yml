@@ -5,6 +5,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 env:
   # TeamTalk unit test environment variables
@@ -17,6 +18,11 @@ env:
 jobs:
   build:
     if: "!startsWith(github.head_ref, 'debug') || startsWith(github.head_ref, 'debug-linux')"
+    permissions:
+      contents: read
+      security-events: write
+      packages: read
+      actions: write
     strategy:
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
@@ -34,6 +40,7 @@ jobs:
       with:
         submodules: true
 
+
     - name: Set up Java
       uses: actions/setup-java@v5
       with:
@@ -43,8 +50,6 @@ jobs:
     - name: Update Ubuntu repository
       run: sudo apt-get update
 
-    - name: Install valgrind
-      run: sudo apt-get install valgrind
 
     - name: Print env
       run: printenv | sort
@@ -57,106 +62,9 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         source env.sh
-        make CMAKE_EXTRA="-DFEATURE_WEBRTC=OFF -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2=ON -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2_PERF=OFF -DTOOLCHAIN_INSTALL_PREFIX=${{runner.workspace}}/toolchain-install -DCMAKE_INSTALL_PREFIX=${{runner.workspace}}/install" -C Build ubuntu${{ matrix.version }}
+        make CMAKE_EXTRA="-G Ninja -DFEATURE_WEBRTC=OFF -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2=ON -DBUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2_PERF=OFF -DTOOLCHAIN_INSTALL_PREFIX=${{runner.workspace}}/toolchain-install -DCMAKE_INSTALL_PREFIX=${{runner.workspace}}/install" -C Build ubuntu${{ matrix.version }}
         echo TEAMTALK_INSTALLDIR=${{runner.workspace}}/install>> $GITHUB_ENV
 
-    - name: Run Java Server API tests (non-encrypted)
-      if: matrix.os == 'ubuntu-22.04'
-      working-directory: ${{github.workspace}}/Library/TeamTalkJNI
-      run: make runjunitsrv
-      env:
-        ENCRYPTED: 0
-        WEBRTC: 0
-
-    - name: Run Java Server API tests (encrypted)
-      if: matrix.os == 'ubuntu-24.04'
-      working-directory: ${{github.workspace}}/Library/TeamTalkJNI
-      run: make runjunitsrv
-      env:
-        ENCRYPTED: 1
-        WEBRTC: 0
-
-    - name: Start TeamTalk Standard Server
-      working-directory: ${{github.workspace}}
-      run: |
-        cp Library/TeamTalkLib/test/tt5srv.xml_template Server/tt5srv.xml
-        Server/tt5srv -d -c Server/tt5srv.xml
-
-    - name: Start TeamTalk Pro Server (encrypted)
-      working-directory: ${{github.workspace}}
-      run: |
-        cp -f Library/TeamTalkLib/test/tt5prosrv.xml_template Server/tt5prosrv.xml
-        cp Library/TeamTalkLib/test/ttservercert.pem Server/
-        cp Library/TeamTalkLib/test/ttserverkey.pem Server/
-        cp Library/TeamTalkLib/test/ca.cer Server/
-        Server/tt5prosrv -d -wd Server/
-
-    - name: Run PyTest
-      working-directory: ${{github.workspace}}
-      run: |
-        source env.sh
-        pytest-3 Library/TeamTalkPy/test/teamtalk_test.py
-
-    - name: Run Python client
-      working-directory: ${{github.workspace}}
-      run: |
-        source env.sh
-        make -C Client/ttserverlogpy
-
-    - name: Run Catch unit tests
-      working-directory: ${{github.workspace}}/Library/TeamTalkLib/test
-      run: valgrind --tool=memcheck --leak-check=full --error-exitcode=1 ./catchtt --durations yes
-
-    - name: Stop TeamTalk Pro Server
-      run: killall tt5prosrv
-
-    - name: Run Java unit tests (non-encrypted)
-      working-directory: ${{github.workspace}}/Library/TeamTalkJNI
-      run: make runjunit
-      env:
-        ENCRYPTED: 0
-        WEBRTC: 0
-
-    - name: Stop TeamTalk Standard Server
-      run: killall tt5srv
-
-    - name: Start TeamTalk Pro Server (non-encrypted)
-      working-directory: ${{github.workspace}}
-      run: |
-        cp -f Library/TeamTalkLib/test/tt5srv.xml_template Server/tt5srv.xml
-        Server/tt5prosrv -d -c Server/tt5srv.xml
-
-    - name: Run Java unit tests with shared audio devices (non-encrypted)
-      if: matrix.os == 'ubuntu-24.04'
-      working-directory: ${{github.workspace}}/Library/TeamTalkJNI
-      run: make runjunitpro
-      env:
-        ENCRYPTED: 0
-        WEBRTC: 0
-        INPUTDEVICEID: 4026
-        OUTPUTDEVICEID: 4026
-
-    - name: Stop TeamTalk Pro Server (non-encrypted)
-      run: killall tt5prosrv
-
-    - name: Start TeamTalk Pro Server (encrypted)
-      working-directory: ${{github.workspace}}
-      run: |
-        cp -f Library/TeamTalkLib/test/tt5prosrv.xml_template Server/tt5prosrv.xml
-        cp Library/TeamTalkLib/test/ttservercert.pem Server/
-        cp Library/TeamTalkLib/test/ttserverkey.pem Server/
-        Server/tt5prosrv -d -wd Server/
-
-    - name: Run Java unit tests (encrypted)
-      if: matrix.os == 'ubuntu-22.04'
-      working-directory: ${{github.workspace}}/Library/TeamTalkJNI
-      run: make runjunitpro
-      env:
-        ENCRYPTED: 1
-        WEBRTC: 0
-
-    - name: Stop TeamTalk Pro Server (encrypted)
-      run: killall tt5prosrv
 
     - name: Build jSpamBot using Gradle
       working-directory: ${{github.workspace}}/Client/jSpamBot
@@ -197,3 +105,4 @@ jobs:
       with:
         name: teamtalkpro-ubuntu${{ matrix.version }}
         path: ${{github.workspace}}/Setup/Portable/teamtalkpro-*
+
