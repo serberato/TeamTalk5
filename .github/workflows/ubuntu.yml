@@ -25,10 +25,8 @@ jobs:
       actions: write
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
+        os: [ubuntu-24.04]
         include:
-          - os: ubuntu-22.04
-            version: "22"
           - os: ubuntu-24.04
             version: "24"
     
@@ -73,6 +71,10 @@ jobs:
     - name: Install TeamTalk SDK
       working-directory: ${{github.workspace}}/Build/build-release-ubuntu${{ matrix.version }}
       run: cmake --build . --target install
+
+    - name: Copy test binary to install directory
+      run: |
+        cp ${{github.workspace}}/Build/build-release-ubuntu${{ matrix.version }}/Library/TeamTalkLib/test/catchtt ${{runner.workspace}}/install/
 
     - name: Build debug TeamTalk using prebuilt toolchain
       working-directory: ${{github.workspace}}
