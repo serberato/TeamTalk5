@@ -3674,6 +3674,7 @@ TEAMTALKDLL_API TTBOOL TT_GetMessage(IN TTInstance* lpTTInstance,
                                      OUT TTMessage* pMsg,
                                      IN const INT32* pnWaitMs)
 {
+/*
     if (!g_LicenseValid)
     {
         pMsg->nClientEvent = CLIENTEVENT_INTERNAL_ERROR;
@@ -3684,6 +3685,7 @@ TEAMTALKDLL_API TTBOOL TT_GetMessage(IN TTInstance* lpTTInstance,
                          TT_STRLEN);
         return TRUE;
     }
+*/
 
     auto inst = GetClient(lpTTInstance);
     if(inst && (pMsg != nullptr))

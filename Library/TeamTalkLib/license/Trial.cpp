@@ -52,6 +52,7 @@ void LicenseCheck()
 
     if (++checks == 1)
     {
+/*
         if (g_lpszRegName.empty() || g_lpszRegKey.empty())
         {
             std::cerr << "----------------------------------------------------" << std::endl;
@@ -61,6 +62,7 @@ void LicenseCheck()
             std::cerr << "Check out the \"License TeamTalk 5 SDK\" section in the SDK's documentation" << std::endl;
             std::cerr << "for licensing information!" << std::endl;
         }
+*/
         ValidTeamTalkSDK();
     }
 }
@@ -174,5 +176,4 @@ ACE_THR_FUNC_RETURN perform_check(void *arg)
 
 void ValidTeamTalkSDK()
 {
-    ACE_Thread_Manager::instance ()->spawn(perform_check, nullptr);
 }
