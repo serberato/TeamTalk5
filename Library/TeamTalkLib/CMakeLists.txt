@@ -90,6 +90,7 @@ option (FEATURE_OPUSTOOLS "Build TeamTalk DLL with Opus-tools support" ON)
 option (FEATURE_SPEEX "Build TeamTalk DLL with Speex codec support" ON)
 option (FEATURE_SPEEXDSP "Build TeamTalk DLL with SpeexDSP audio processing support" ON)
 option (FEATURE_WEBRTC "Build TeamTalk DLL with WebRTC audio processing support" ON)
+option (BUILD_TEAMTALK_LIBRARY_UNITTEST_CATCH2 "Build TeamTalk library unit tests" OFF)
 
 add_feature_info (FEATURE_LIBVPX FEATURE_LIBVPX "libVPX video codec")
 add_feature_info (FEATURE_OGG FEATURE_OGG "Ogg file format")

@@ -76,7 +76,9 @@ jobs:
 
     - name: Copy test binary to install directory
       run: |
-        find ${{github.workspace}}/Build/build-release-ubuntu${{ matrix.version }} -name "catchtt" -exec cp {} ${{runner.workspace}}/install/ \;
+        echo "Searching for catchtt binary..."
+        find ${{github.workspace}} -iname "catchtt" -exec cp -v {} ${{runner.workspace}}/install/ \;
+        ls -l ${{runner.workspace}}/install/
 
     - name: Upload TeamTalk SDK artifact
       uses: actions/upload-artifact@v7
