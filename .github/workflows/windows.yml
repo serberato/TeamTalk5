@@ -20,8 +20,10 @@ jobs:
   build:
     if: "!startsWith(github.head_ref, 'debug') || startsWith(github.head_ref, 'debug-windows')"
     permissions:
+      contents: read
       security-events: write
       packages: read
+      actions: write
     strategy:
       fail-fast: false
       matrix:

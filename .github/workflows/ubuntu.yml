@@ -19,8 +19,10 @@ jobs:
   build:
     if: "!startsWith(github.head_ref, 'debug') || startsWith(github.head_ref, 'debug-linux')"
     permissions:
+      contents: read
       security-events: write
       packages: read
+      actions: write
     strategy:
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
